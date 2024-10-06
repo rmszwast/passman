@@ -5,6 +5,14 @@
     "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
     "customizations": {
         "vscode": {
+            "settings": {
+                "editor.detectIndentation": false,
+                "editor.insertSpaces": true,
+                "editor.tabSize": 4,
+                "C_Cpp.codeAnalysis.runAutomatically": true,
+                "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+                "editor.formatOnSave": true
+            },
             "extensions": [
                 "jgclark.vscode-todo-highlight",
                 "ms-vscode.cpptools-extension-pack",
