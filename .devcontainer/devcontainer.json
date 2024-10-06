@@ -6,7 +6,6 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "golang.go",
                 "jgclark.vscode-todo-highlight",
                 "ms-vscode.cpptools-extension-pack",
                 "ms-azuretools.vscode-docker",

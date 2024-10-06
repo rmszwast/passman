@@ -10,12 +10,3 @@ RUN apt-get update && apt-get -y install \
     gdb \
     git-all \
     curl
-
-# install Go
-RUN curl -LO https://go.dev/dl/go1.23.1.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go1.23.1.linux-amd64.tar.gz && \
-    rm go1.23.1.linux-amd64.tar.gz
-ENV PATH=$PATH:/usr/local/go/bin:/root/go/bin
-
-# install delve debugger for Go
-RUN go install github.com/go-delve/delve/cmd/dlv@latest
