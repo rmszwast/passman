@@ -6,12 +6,13 @@
     "customizations": {
         "vscode": {
             "settings": {
-                "editor.detectIndentation": false,
-                "editor.insertSpaces": true,
-                "editor.tabSize": 4,
-                "C_Cpp.codeAnalysis.runAutomatically": true,
+                "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Mozilla, IndentWidth: 4 }",
                 "C_Cpp.codeAnalysis.clangTidy.enabled": true,
-                "editor.formatOnSave": true
+                "C_Cpp.codeAnalysis.runAutomatically": true,
+                "editor.detectIndentation": false,
+                "editor.formatOnSave": true,
+                "editor.insertSpaces": true,
+                "editor.tabSize": 4
             },
             "extensions": [
                 "jgclark.vscode-todo-highlight",
