@@ -1,2 +1,3 @@
-# ignore binaries
-**.bin
+bin
+build
+.vscode
