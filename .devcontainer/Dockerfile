@@ -6,8 +6,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 # install apt packages
 RUN apt-get update && apt-get -y install \
     bash \
-    vim \
     build-essential \
+    cmake \
+    curl \
     gdb \
     git-all \
-    curl
+    vim
