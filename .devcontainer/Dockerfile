@@ -12,3 +12,5 @@ RUN apt-get update && apt-get -y install \
     gdb \
     git-all \
     vim
+
+ENV PROJECT_SOURCE_DIR /workspaces/passman
