@@ -1,3 +1,10 @@
-bin
-build
 .vscode
+
+# build dirs
+bin/*
+build/*
+debug/*
+release/*
+scratch/*
+
+cmake-3.30.5-tutorial-source
