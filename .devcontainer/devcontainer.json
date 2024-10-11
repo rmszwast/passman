@@ -16,8 +16,10 @@
             },
             "extensions": [
                 "jgclark.vscode-todo-highlight",
-                "ms-vscode.cpptools-extension-pack",
                 "ms-azuretools.vscode-docker",
+                "ms-vscode.cmake-tools",
+                "ms-vscode.makefile-tools",
+                "ms-vscode.cpptools-extension-pack",
                 "streetsidesoftware.code-spell-checker",
                 "tomoki1207.pdf"
             ]
