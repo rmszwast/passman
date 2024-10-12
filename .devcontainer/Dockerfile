@@ -11,6 +11,8 @@ RUN apt-get update && apt-get -y install \
     curl \
     gdb \
     git-all \
+    python3 \
     vim
 
 ENV PROJECT_SOURCE_DIR /workspaces/passman
+
