@@ -1,52 +1,23 @@
-#include <CLI/CLI.hpp>
-#include <string>
+#include <iostream>
+
+#include "botan_all.h"
 
 int
-main(int argc, char** argv)
+main()
 {
-    std::string input_file_name, output_file_name;
-    int level{ 5 }, subopt{ 0 };
+    std::string input_string = "1234";
 
-    // app caption
-    CLI::App app{ "CLI11 help" };
+    // SHA3-256
+    auto sha3_256 = Botan::HashFunction::create_or_throw("SHA-3(256)");
+    std::cout << "SHA3-256: "
+              << Botan::hex_encode(sha3_256->process(input_string))
+              << std::endl;
 
-    app.require_subcommand(1);
-    // subcommands options and flags
-    CLI::App* const encode =
-      app.add_subcommand("e", "encode")->ignore_case(); // ignore case
-    encode->add_option("input", input_file_name, "input file")
-      ->option_text(" ")
-      ->required()
-      ->check(CLI::ExistingFile); // file must exist
-    encode->add_option("output", output_file_name, "output file")
-      ->option_text(" ")
-      ->required(); // required option
-    encode->add_option("-l, --level", level, "encoding level")
-      ->option_text("[1..9]")
-      ->check(CLI::Range(1, 9))
-      ->default_val(5); // limit parameter range
-    encode->add_flag("-R, --remove",
-                     "remove input file"); // no parameter option
-    encode->add_flag("-s, --suboption", subopt, "suboption")->option_text(" ");
-
-    CLI::App* const decode = app.add_subcommand("d", "decode")->ignore_case();
-    decode->add_option("input", input_file_name, "input file")
-      ->option_text(" ")
-      ->required()
-      ->check(CLI::ExistingFile);
-    decode->add_option("output", output_file_name, "output file")
-      ->option_text(" ")
-      ->required();
-
-    // Usage message modification
-    std::string usage_msg = "Usage: " + std::string(argv[0]) +
-                            " <command> [options] <input-file> <output-file>";
-    app.usage(usage_msg);
-    // flag to display full help at once
-    app.set_help_flag("");
-    app.set_help_all_flag("-h, --help");
-
-    CLI11_PARSE(app, argc, argv);
+    // SHA3-512
+    auto sha3_512 = Botan::HashFunction::create_or_throw("SHA-3(512)");
+    std::cout << "SHA3-512: "
+              << Botan::hex_encode(sha3_512->process(input_string))
+              << std::endl;
 
     return 0;
 }
