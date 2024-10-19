@@ -1,0 +1,17 @@
+vault_name: My Vault
+entries:
+  - name: Google Account
+    username: user1
+    password: pass1
+    url: https://google.com
+    notes: Primary account
+    groups:
+      - Personal
+      - Work
+  - name: GitHub Account
+    username: user2
+    password: pass2
+    url: https://github.com
+    notes: Development account
+    groups:
+      - Work
