@@ -13,4 +13,7 @@ RUN apt-get update && apt-get -y install \
     git-all \
     vim
 
+# enable colored prompt
+RUN /bin/bash -c  "sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' ${HOME}/.bashrc"
+
 ENV PROJECT_SOURCE_DIR /workspaces/passman
