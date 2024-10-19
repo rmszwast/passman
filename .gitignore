@@ -1,10 +1,8 @@
-.vscode
-
-# build dirs
+.vscode/*
+!.vscode/c_cpp_properties.json
 bin/*
 build/*
 debug/*
 release/*
 scratch/*
-
-cmake-3.30.5-tutorial-source
+noTrack
