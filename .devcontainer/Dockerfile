@@ -11,6 +11,7 @@ RUN apt-get update && apt-get -y install \
     curl \
     gdb \
     git-all \
+    python3 \
     vim
 
 # enable colored prompt
