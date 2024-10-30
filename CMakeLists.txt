@@ -7,7 +7,7 @@ project(passman VERSION 1.0)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# add CLI11 to the project
+# add libraries to the project
 add_subdirectory(lib/CLI11)
 add_subdirectory(lib/yaml-cpp)
 add_subdirectory(lib/Catch2)
