@@ -44,11 +44,15 @@ if(NOT Botan_FOUND)
     # configure make targets
     execute_process(
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/botan/
-        COMMAND python3 configure.py
+        COMMAND ${Python3_EXECUTABLE} configure.py
             --disable-shared
             --prefix=${PROJECT_SOURCE_DIR}/lib/botan/build
             --disable-deprecated-features
+        RESULT_VARIABLE EXIT_CODE
     )
+    if(NOT EXIT_CODE EQUAL "0")
+    message(FATAL_ERROR "fatal: failed to run ${Python3_EXECUTABLE} /workspaces/passman/lib/botan/configure.py")
+    endif(NOT EXIT_CODE EQUAL "0")
     # build make targets
     execute_process(
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/lib/botan/
