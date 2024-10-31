@@ -7,6 +7,18 @@ project(passman VERSION 1.0)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# verify Git is installed
+find_package(Git REQUIRED)
+if(NOT Git_FOUND)
+    message(FATAL_ERROR "fatal: Git not found")
+endif(NOT Git_FOUND)
+
+# verify Python is installed
+find_package(Python3 REQUIRED)
+if(NOT Python3_FOUND)
+    message(FATAL_ERROR "fatal: Python not found")
+endif(NOT Python3_FOUND)
+
 # add libraries to the project
 add_subdirectory(lib/CLI11)
 add_subdirectory(lib/yaml-cpp)
