@@ -19,6 +19,16 @@ if(NOT Python3_FOUND)
     message(FATAL_ERROR "fatal: Python not found")
 endif(NOT Python3_FOUND)
 
+# get libraries
+execute_process(
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    COMMAND ${GIT_EXECUTABLE} submodule update --init
+    RESULT_VARIABLE EXIT_CODE
+)
+if(NOT EXIT_CODE EQUAL "0")
+    message(FATAL_ERROR "fatal: failed to run ${GIT_EXECUTABLE} submodule update --init")
+endif(NOT EXIT_CODE EQUAL "0")
+
 # add libraries to the project
 add_subdirectory(lib/CLI11)
 add_subdirectory(lib/yaml-cpp)
