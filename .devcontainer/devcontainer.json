@@ -2,13 +2,7 @@
     "build": {
         "dockerfile": "Dockerfile"
     },
-    "postStartCommand": {
-        "passman": "git config --global --add safe.directory ${containerWorkspaceFolder}",
-        "botan": "git config --global --add safe.directory ${containerWorkspaceFolder}/lib/botan",
-        "Catch2": "git config --global --add safe.directory ${containerWorkspaceFolder}/lib/Catch2",
-        "CLI11": "git config --global --add safe.directory ${containerWorkspaceFolder}/lib/CLI11",
-        "yaml-cpp": "git config --global --add safe.directory ${containerWorkspaceFolder}/lib/yaml-cpp"
-    },
+    "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/botan && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/Catch2 && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/CLI11 && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/yaml-cpp",
     "customizations": {
         "vscode": {
             "settings": {
