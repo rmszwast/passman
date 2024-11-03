@@ -2,7 +2,7 @@
     "build": {
         "dockerfile": "Dockerfile"
     },
-    "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+    "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/botan && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/Catch2 && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/CLI11 && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/yaml-cpp",
     "customizations": {
         "vscode": {
             "settings": {
@@ -16,12 +16,10 @@
             },
             "extensions": [
                 "jgclark.vscode-todo-highlight",
-                "ms-azuretools.vscode-docker",
-                "ms-vscode.cmake-tools",
-                "ms-vscode.makefile-tools",
-                "ms-vscode.cpptools-extension-pack",
+                "ms-vscode.cpptools",
                 "streetsidesoftware.code-spell-checker",
-                "tomoki1207.pdf"
+                "tomoki1207.pdf",
+                "twxs.cmake"
             ]
         }
     }

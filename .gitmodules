@@ -1,6 +1,12 @@
 [submodule "lib/CLI11"]
 	path = lib/CLI11
 	url = https://github.com/CLIUtils/CLI11.git
+[submodule "lib/yaml-cpp"]
+	path = lib/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "lib/Catch2"]
+	path = lib/Catch2
+	url = https://github.com/catchorg/Catch2.git
 [submodule "lib/botan"]
 	path = lib/botan
 	url = https://github.com/randombit/botan.git
