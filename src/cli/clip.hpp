@@ -4,12 +4,14 @@
 #include "command.hpp"
 #include <stdlib.h>
 #include <string>
+#include "vault.hpp"
 
 class Clip : public Command
 {
   public:
     Clip(CLI::App* app);
-    int executeWithVault(Vault vault, CommandLineParser parser) void setup();
+    void setup();
+    int execute(Vault vault, int timeout);
 }
 
 #endif
