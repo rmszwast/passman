@@ -66,7 +66,8 @@ endif(NOT Botan_FOUND)
 add_executable(
     ${CMAKE_PROJECT_NAME} 
     ${PROJECT_SOURCE_DIR}/src/${CMAKE_PROJECT_NAME}.cpp
-) 
+    ${PROJECT_SOURCE_DIR}/src/encryptor.cpp
+    ${PROJECT_SOURCE_DIR}/src/encryptor_handler.cpp) 
 
 # link libraries to the executable
 target_link_libraries(${CMAKE_PROJECT_NAME}

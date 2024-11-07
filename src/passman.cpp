@@ -1,4 +1,5 @@
 #include <CLI/CLI.hpp>
+#include "encryptor_handler.hpp"
 #include <string>
 
 int
