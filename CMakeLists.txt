@@ -19,6 +19,7 @@ set(CLI11_PRECOMPILED True)
 add_executable(
     ${CMAKE_PROJECT_NAME} 
     ${PROJECT_SOURCE_DIR}/src/${CMAKE_PROJECT_NAME}.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli/clip.cpp
 ) 
 
 # link libraries to the executable
