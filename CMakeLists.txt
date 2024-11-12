@@ -33,6 +33,7 @@ endif(NOT EXIT_CODE EQUAL "0")
 add_subdirectory(lib/CLI11)
 add_subdirectory(lib/yaml-cpp)
 add_subdirectory(lib/Catch2)
+add_subdirectory(lib/trompeloeil)
 
 # set CLI11 to compile to a static library
 set(CLI11_PRECOMPILED True)
