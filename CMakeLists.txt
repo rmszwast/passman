@@ -69,8 +69,25 @@ add_executable(
     ${PROJECT_SOURCE_DIR}/src/${CMAKE_PROJECT_NAME}.cpp
 ) 
 
+# create a library from non-main source files
+# this faciliates easier unit testing
+# add new source files here
+add_library(
+    _${CMAKE_PROJECT_NAME} STATIC
+    ${PROJECT_SOURCE_DIR}/src/cli/command.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli/vault.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli/create.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/getPass.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/error.cpp
+)
+
 # link libraries to the executable
-target_link_libraries(${CMAKE_PROJECT_NAME}
+target_link_libraries(
+    ${CMAKE_PROJECT_NAME}
+    _${CMAKE_PROJECT_NAME}
+)
+target_link_libraries(
+    _${CMAKE_PROJECT_NAME}
     CLI11::CLI11
     yaml-cpp::yaml-cpp
     Catch2::Catch2WithMain
