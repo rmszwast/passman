@@ -90,9 +90,10 @@ target_link_libraries(
     _${CMAKE_PROJECT_NAME}
     CLI11::CLI11
     yaml-cpp::yaml-cpp
-    Catch2::Catch2WithMain
     Botan::Botan-static
 )
+
+add_subdirectory(tests)
 
 # expand search path for include files
 target_include_directories(
