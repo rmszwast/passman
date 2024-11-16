@@ -79,6 +79,8 @@ add_library(
     ${PROJECT_SOURCE_DIR}/src/cli/create.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/getPass.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/error.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/encryptor.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/encryptor_handler.cpp
 )
 
 # link libraries to the executable
