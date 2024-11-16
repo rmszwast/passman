@@ -1,7 +1,7 @@
 #include <cstdint>
 #define CATCH_CONFIG_MAIN // Define main
-#include "encryptor.hpp"
-#include <catch2/catch.hpp>
+#include "../src/utils/encryptor.hpp"
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Encryption and Decryption Operations") {
   // Test variables

@@ -35,6 +35,7 @@ add_subdirectory(lib/yaml-cpp)
 add_subdirectory(lib/Catch2)
 add_subdirectory(lib/trompeloeil)
 
+
 # set CLI11 to compile to a static library
 set(CLI11_PRECOMPILED True)
 
@@ -67,8 +68,7 @@ endif(NOT Botan_FOUND)
 add_executable(
     ${CMAKE_PROJECT_NAME} 
     ${PROJECT_SOURCE_DIR}/src/${CMAKE_PROJECT_NAME}.cpp
-    ${PROJECT_SOURCE_DIR}/src/encryptor.cpp
-    ${PROJECT_SOURCE_DIR}/src/encryptor_handler.cpp) 
+) 
 
 # create a library from non-main source files
 # this faciliates easier unit testing
@@ -80,6 +80,8 @@ add_library(
     ${PROJECT_SOURCE_DIR}/src/cli/create.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/getPass.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/error.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/encryptor.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/encryptor_handler.cpp
 )
 
 # link libraries to the executable
