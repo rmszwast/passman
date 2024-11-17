@@ -6,6 +6,8 @@ add_executable(
     test_${CMAKE_PROJECT_NAME} 
     ${PROJECT_SOURCE_DIR}/tests/test_create.cpp
     ${PROJECT_SOURCE_DIR}/tests/test_getPass.cpp
+    ${PROJECT_SOURCE_DIR}/tests/test_encryptor.cpp
+    ${PROJECT_SOURCE_DIR}/tests/test_encryptor_handler.cpp
 ) 
 
 # link libraries to the executable
