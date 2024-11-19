@@ -18,6 +18,4 @@ class Create : public Command
 void
 createVault(std::string path, getPass_interface& api);
 
-extern std::function<void()> f;
-
 #endif
