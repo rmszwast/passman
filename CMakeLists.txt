@@ -77,6 +77,7 @@ add_library(
     ${PROJECT_SOURCE_DIR}/src/cli/command.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/vault.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/create.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli/entry.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/getPass.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/error.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/encryptor.cpp
