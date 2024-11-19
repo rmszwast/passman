@@ -1,9 +1,13 @@
 #include "create.hpp"
+#include "../utils/encryptor_handler.hpp"
 #include "../utils/error.hpp"
 #include "../utils/getPass.hpp"
 #include <fstream>
 
+namespace {
 std::string path;
+getPass_api api;
+}
 
 Create::Create(CLI::App* app)
   : Command(app) {};
@@ -15,7 +19,7 @@ Create::setup()
     description = "Create a vault";
     app = app->add_subcommand(name, description)
             ->usage("passman vault create [OPTIONS] PATH")
-            ->callback(f);
+            ->callback([]() { createVault(path, api); });
     app->add_option("path", path, "The path of the vault")->required();
 };
 
@@ -36,13 +40,17 @@ createVault(std::string path, getPass_interface& api)
     }
 
     // Prompt for password creation
+    std::string pass;
     try {
         auto pass1 = api.getPass("Enter password to encrypt vault");
         auto pass2 = api.getPass("Re-enter password");
         if (pass1 != pass2) {
             printErr("passwords do not match");
             return;
+        } else {
+            pass = pass1;
         }
+
     } catch (std::runtime_error err) {
         printErr(err.what());
     }
@@ -58,19 +66,18 @@ createVault(std::string path, getPass_interface& api)
         return;
     }
 
-    // TODO: integrate encryption
+    // Encrypt the file
+    EncryptorHandler encryptor;
+    auto encoded = encryptor.encrypt(pass);
 
-    // Write to file and close
-    ofs << "Hello from password vault!" << std::endl;
+    // Write encrypted data to file and close
+    ofs.write(reinterpret_cast<const char*>(encoded.data()), encoded.size());
     ofs.close();
     if (!ofs.good()) {
-        printErr("error: failed to close file");
+        printErr("failed to close file");
         return;
     }
 
     // Print success message
     std::cout << path << " successfully created" << std::endl;
 };
-
-getPass_api api;
-std::function<void()> f = []() { createVault(path, api); };
