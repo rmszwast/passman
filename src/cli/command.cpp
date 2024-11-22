@@ -1,6 +1,7 @@
 #include "command.hpp"
 #include "create.hpp"
 #include "entry.hpp"
+#include "password.hpp"
 #include "vault.hpp"
 
 Command::Command(CLI::App* app)
@@ -19,4 +20,8 @@ Commands::setupCommands(CLI::App* app)
     // Entry commands
     Entry entry = Entry(app);
     entry.setup();
+
+    // Password/diceware commands
+    Password password = Password(app);
+    password.setup();
 };
