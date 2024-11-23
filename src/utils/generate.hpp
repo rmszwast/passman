@@ -1,6 +1,7 @@
 #ifndef GENERATOR_H
 #define GENERATOR_H
 
+#include "../cli/command.hpp"
 #include "constants.hpp"
 #include <random>
 #include <string>
@@ -53,36 +54,8 @@ class PasswordGenerator
     std::string dicewareOnly() const;
 
   public:
-    // Separate setters for min/max requirements
-    PasswordGenerator& setMinLength(int min);
-    PasswordGenerator& setMaxLength(int max);
-
-    // Separate setters for uppercase requirement
-    PasswordGenerator& setRequireUppercase(bool value);
-    PasswordGenerator& setNoUppercase(bool value);
-
-    // Separate setters for lowercase requirement
-    PasswordGenerator& setRequireLowercase(bool value);
-    PasswordGenerator& setNoLowercase(bool value);
-
-    // Separate setters for numbers requirement
-    PasswordGenerator& setRequireNumbers(bool value);
-    PasswordGenerator& setNoNumbers(bool value);
-
-    // Separate setters for special characters requirement
-    PasswordGenerator& setRequireSpecialChars(bool value);
-    PasswordGenerator& setNoSpecialChars(bool value);
-
-    // Setters for misc boolean settings
-    PasswordGenerator& setNoDictionaryWords(bool value);
-    PasswordGenerator& setNoConsecutiveRepeats(bool value);
-    PasswordGenerator& setUseDiceware(bool value);
-
-    PasswordGenerator& setDicewareCount(int ct);
-    PasswordGenerator& setFullDiceware(bool value);
-
     // Main generate function to be used by other files
-    std::string generate() const;
+    std::string generate(const Flags_t& flags, bool maxUsed, bool minUsed);
 };
 
 #endif // GENERATOR_H

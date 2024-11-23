@@ -10,4 +10,9 @@ class Password : public Command
     void setup();
 };
 
+void
+addPartialPasswordFlags(CLI::App* generateCmd, Flags_t* flags);
+void
+addAllPasswordFlags(CLI::App* generateCmd, Flags_t* flags);
+
 #endif

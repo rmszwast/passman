@@ -1,6 +1,7 @@
 #include "command.hpp"
 #include "create.hpp"
 #include "entry.hpp"
+#include "example.hpp"
 #include "password.hpp"
 #include "vault.hpp"
 
@@ -24,4 +25,7 @@ Commands::setupCommands(CLI::App* app)
     // Password/diceware commands
     Password password = Password(app);
     password.setup();
+
+    Example example = Example(app);
+    example.setup();
 };

@@ -1,121 +1,9 @@
 #include "generate.hpp"
+#include "../cli/command.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-
-PasswordGenerator&
-PasswordGenerator::setMinLength(int min)
-{
-    minLength = min;
-    return *this;
-}
-
-PasswordGenerator&
-PasswordGenerator::setMaxLength(int max)
-{
-    maxLength = max;
-    return *this;
-}
-
-// Separate setter for requireUppercase
-PasswordGenerator&
-PasswordGenerator::setRequireUppercase(bool value)
-{
-    requireUppercase = value;
-    return *this;
-}
-
-// Separate setter for noUppercase
-PasswordGenerator&
-PasswordGenerator::setNoUppercase(bool value)
-{
-    noUppercase = value;
-    return *this;
-}
-
-// Separate setter for requireLowercase
-PasswordGenerator&
-PasswordGenerator::setRequireLowercase(bool value)
-{
-    requireLowercase = value;
-    return *this;
-}
-
-// Separate setter for noLowercase
-PasswordGenerator&
-PasswordGenerator::setNoLowercase(bool value)
-{
-    noLowercase = value;
-    return *this;
-}
-
-// Separate setter for requireNumbers
-PasswordGenerator&
-PasswordGenerator::setRequireNumbers(bool value)
-{
-    requireNumbers = value;
-    return *this;
-}
-
-// Separate setter for noNumbers
-PasswordGenerator&
-PasswordGenerator::setNoNumbers(bool value)
-{
-    noNumbers = value;
-    return *this;
-}
-
-// Separate setter for requireSpecialChars
-PasswordGenerator&
-PasswordGenerator::setRequireSpecialChars(bool value)
-{
-    requireSpecialChars = value;
-    return *this;
-}
-
-// Separate setter for noSpecialChars
-PasswordGenerator&
-PasswordGenerator::setNoSpecialChars(bool value)
-{
-    noSpecialChars = value;
-    return *this;
-}
-
-PasswordGenerator&
-PasswordGenerator::setNoDictionaryWords(bool value)
-{
-    noDictionaryWords = value;
-    return *this;
-}
-
-PasswordGenerator&
-PasswordGenerator::setNoConsecutiveRepeats(bool value)
-{
-    noConsecutiveRepeats = value;
-    return *this;
-}
-
-PasswordGenerator&
-PasswordGenerator::setUseDiceware(bool value)
-{
-    useDiceware = value;
-    return *this;
-}
-
-PasswordGenerator&
-PasswordGenerator::setDicewareCount(int ct)
-{
-    dicewareWordCount = ct;
-    return *this;
-}
-
-PasswordGenerator&
-PasswordGenerator::setFullDiceware(bool value)
-{
-    fullDiceware = value;
-    return *this;
-}
 
 // Error handling for conflicting or impossible requirements, including detailed
 // message
@@ -589,7 +477,7 @@ PasswordGenerator::create() const
                       getRandomStringOfLength(gen, charChoice, 1, lastChar);
                 }
             }
-            if (!noConsecutiveRepeats && spacer != "") {
+            if (noConsecutiveRepeats && spacer != "") {
                 char lastChar = password.empty() ? '\x1F' : password.back();
                 password +=
                   getRandomStringOfLength(gen, charChoice, 1, lastChar);
@@ -628,15 +516,41 @@ PasswordGenerator::dicewareOnly() const
 }
 
 std::string
-PasswordGenerator::generate() const
+PasswordGenerator::generate(const Flags_t& flags, bool maxUsed, bool minUsed)
 {
-    try {
-        if (fullDiceware) {
-            return dicewareOnly();
+    // Directly modify the member variables without using setter functions
+    minLength = flags.minLength;
+    maxLength = flags.maxLength;
+
+    if (minUsed && !maxUsed) {
+        maxLength = minLength + 5;
+    } else if (maxUsed && !minUsed) {
+        if (maxLength < 5) {
+            minLength = maxLength;
+        } else {
+            minLength = std::max(maxLength - 2, 1);
         }
-        validate();
-        return create();
-    } catch (const std::runtime_error& e) {
-        return e.what();
     }
+
+    requireUppercase = flags.upperRequired;
+    noUppercase = flags.upperNotAllowed;
+    requireLowercase = flags.lowerRequired;
+    noLowercase = flags.lowerNotAllowed;
+    requireNumbers = flags.numRequired;
+    noNumbers = flags.numNotAllowed;
+    requireSpecialChars = flags.specialRequired;
+    noSpecialChars = flags.specialNotAllowed;
+    noDictionaryWords = flags.noDictionaryWords;
+    noConsecutiveRepeats = flags.noRepeatCharacters;
+    useDiceware = flags.dicewarePassword;
+    fullDiceware = flags.dicewareOnly;
+    dicewareWordCount = flags.dicewareLength;
+
+    if (fullDiceware) {
+        return dicewareOnly();
+    }
+
+    validate();
+
+    return create();
 }
