@@ -10,3 +10,6 @@
 [submodule "lib/botan"]
 	path = lib/botan
 	url = https://github.com/randombit/botan.git
+[submodule "lib/trompeloeil"]
+	path = lib/trompeloeil
+	url = https://github.com/rollbear/trompeloeil.git
