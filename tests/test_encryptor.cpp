@@ -57,6 +57,7 @@ TEST_CASE("Encryption and Decryption Operations")
                                                 ciphertextSpan.end());
         tamperedCipherText.insert(
           tamperedCipherText.end(), dataToAdd.begin(), dataToAdd.end());
+
         REQUIRE_THROWS(encryptor.decrypt(password, tamperedCipherText));
     }
 }

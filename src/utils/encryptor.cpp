@@ -160,14 +160,10 @@ Encryptor::decrypt(std::string_view password,
     try {
         aead->finish(decryptedData);
     } catch (const Botan::Integrity_Failure& e) {
-        std::cerr << "Invalid password or data may be tampered with: "
-                  << e.what() << std::endl;
         throw;
     } catch (const Botan::Exception& e) {
-        std::cerr << "Botan error: " << e.what() << std::endl;
         throw;
     } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
         throw;
     }
 
