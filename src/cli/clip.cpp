@@ -97,7 +97,6 @@ clipPassword(std::string path,
 
     // set timeout for clearing clipboard
     int timeout;
-    std::cout << std::to_string(manualTimeout) << std::endl;
     if (manualTimeout < MIN_TIME || manualTimeout > MAX_TIME) {
         timeout = DEFAULT_CLIPBOARD_TIMEOUT;
     } else {
