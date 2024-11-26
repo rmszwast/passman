@@ -1,19 +1,20 @@
 #include "../src/cli/create.hpp"
 #include "../src/utils/error.hpp"
-#include "../src/utils/getPass.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/trompeloeil.hpp>
 
 namespace vaultCreateTests {
-class getPass_mock : public getPass_interface
+
+class PassGetterMock : public PassGetterInterface
 {
   public:
-    MAKE_MOCK1(getPass, std::string(std::string), override);
+    MAKE_MOCK1(get, std::string(std::string), override);
 };
 
 namespace fs = std::filesystem;
 std::string path = "test-vault";
-getPass_mock mock;
+VaultWriter vaultWriter;
+PassGetterMock passGetter;
 
 TEST_CASE("Given a preexisting vault, a vault is not created and an error "
           "message is printed to stderr",
@@ -32,7 +33,7 @@ TEST_CASE("Given a preexisting vault, a vault is not created and an error "
     auto cerr_buff = std::cerr.rdbuf();
     std::cerr.rdbuf(local.rdbuf());
 
-    createVault(path, mock);
+    createVault(path, vaultWriter, passGetter);
     REQUIRE(local.str() == stringErr(path + ": file already exists\n"));
 
     // Restore stderr
@@ -58,11 +59,11 @@ TEST_CASE("Given a nonexisting vault, test branching logic", "[create tests]")
             auto cout_buff = std::cout.rdbuf();
             std::cout.rdbuf(local.rdbuf());
             {
-                REQUIRE_CALL(mock, getPass("Enter password to encrypt vault"))
+                REQUIRE_CALL(passGetter, get("Enter password to encrypt vault"))
                   .RETURN("pa$$w0rd");
-                REQUIRE_CALL(mock, getPass("Re-enter password"))
+                REQUIRE_CALL(passGetter, get("Re-enter password"))
                   .RETURN("pa$$w0rd");
-                createVault(path, mock);
+                createVault(path, vaultWriter, passGetter);
             }
             REQUIRE(fs::exists(fs::path{ path }));
             REQUIRE(local.str() == path + " successfully created\n");
@@ -75,14 +76,14 @@ TEST_CASE("Given a nonexisting vault, test branching logic", "[create tests]")
         {
             std::string path = "test-vault/";
             {
-                REQUIRE_CALL(mock, getPass("Enter password to encrypt vault"))
+                REQUIRE_CALL(passGetter, get("Enter password to encrypt vault"))
                   .RETURN("pa$$w0rd");
-                REQUIRE_CALL(mock, getPass("Re-enter password"))
+                REQUIRE_CALL(passGetter, get("Re-enter password"))
                   .RETURN("pa$$w0rd");
-                createVault(path, mock);
+                createVault(path, vaultWriter, passGetter);
             }
             REQUIRE(!fs::exists(fs::path{ path }));
-            REQUIRE(local.str() == stringErr(path + ": invalid path\n"));
+            REQUIRE(local.str() == stringErr("failed to open " + path + "\n"));
         }
     }
 
@@ -90,11 +91,11 @@ TEST_CASE("Given a nonexisting vault, test branching logic", "[create tests]")
             "message is printed to stderr")
     {
         {
-            REQUIRE_CALL(mock, getPass("Enter password to encrypt vault"))
+            REQUIRE_CALL(passGetter, get("Enter password to encrypt vault"))
               .RETURN("pa$$w0rd111");
-            REQUIRE_CALL(mock, getPass("Re-enter password"))
+            REQUIRE_CALL(passGetter, get("Re-enter password"))
               .RETURN("pa$$w0rd222");
-            createVault(path, mock);
+            createVault(path, vaultWriter, passGetter);
         }
         REQUIRE(!fs::exists(fs::path{ path }));
         REQUIRE(local.str() == stringErr("passwords do not match\n"));
