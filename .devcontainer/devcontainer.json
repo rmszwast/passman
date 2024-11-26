@@ -3,6 +3,12 @@
         "dockerfile": "Dockerfile"
     },
     "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
+    "runArgs": [
+                "-e",
+                "DISPLAY=${env:DISPLAY}",
+                "-v",
+                "/tmp/.X11-unix:/tmp/.X11-unix"
+            ],
     "customizations": {
         "vscode": {
             "settings": {

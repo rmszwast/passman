@@ -11,6 +11,8 @@
 #include <vector>
 
 #define DEFAULT_CLIPBOARD_TIMEOUT 10
+#define MIN_TIME 1
+#define MAX_TIME 30
 
 namespace {
 std::string path;
@@ -93,11 +95,13 @@ clipPassword(std::string path,
     // unpack password and store in variable
     std::string password = inode[entry.name]["Password"].as<std::string>();
 
+    // set timeout for clearing clipboard
     int timeout;
-    if (manualTimeout < 1) {
-        int timeout = DEFAULT_CLIPBOARD_TIMEOUT;
+    std::cout << std::to_string(manualTimeout) << std::endl;
+    if (manualTimeout < MIN_TIME || manualTimeout > MAX_TIME) {
+        timeout = DEFAULT_CLIPBOARD_TIMEOUT;
     } else {
-        int timeout = manualTimeout;
+        timeout = manualTimeout;
     }
 
     // sanitize password here
@@ -112,9 +116,7 @@ clipPassword(std::string path,
     // copy to clipboard
     std::string cmd = "echo " + password + " | xclip -selection clipboard";
     try {
-        std::cout << "place 1" << std::endl;
         int res = system(cmd.c_str());
-        std::cout << "place 2" << std::endl;
         if (res != 0) {
             std::cerr << "Failed to copy to clipboard. Please ensure xclip is "
                          "installed (try: sudo apt-get install xclip)"
