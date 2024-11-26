@@ -7,6 +7,22 @@
 #include <string>
 #include <vector>
 
+#include <exception>
+
+// Represents an error occurring when there is a conflict/other issue w/ flags
+class ConflictingFlagsException : public std::exception
+{
+    std::string message;
+
+  public:
+    explicit ConflictingFlagsException(const std::string& msg)
+      : message(msg)
+    {
+    }
+
+    const char* what() const noexcept override { return message.c_str(); }
+};
+
 class PasswordGenerator
 {
   private:
@@ -57,5 +73,22 @@ class PasswordGenerator
     // Main generate function to be used by other files
     std::string generate(const Flags_t& flags, bool maxUsed, bool minUsed);
 };
+
+// Below, standalone functions to be used by actual commands
+void
+addPartialPasswordFlags(CLI::App* generateCmd, Flags_t* flags);
+void
+addPartialDicewareFlags(CLI::App* generateCmd, Flags_t* flags);
+void
+addAllPasswordFlags(CLI::App* generateCmd, Flags_t* flags);
+void
+addAllDicewareFlags(CLI::App* generateCmd, Flags_t* flags);
+void
+generatePassword(CLI::App* printCmd, std::string* outPassword, Flags_t* flags);
+void
+generateDiceware(std::string* outPassword, Flags_t* flags);
+
+void
+addPasswordAndDicewareFlags(CLI::App* generateCmd, Flags_t* flags);
 
 #endif // GENERATOR_H

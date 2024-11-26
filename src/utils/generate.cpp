@@ -5,53 +5,156 @@
 #include <string>
 #include <vector>
 
+void
+generatePassword(CLI::App* printCmd, std::string* outPassword, Flags_t* flags)
+{
+    PasswordGenerator generator;
+    *outPassword = generator.generate(*flags,
+                                      printCmd->get_option("-x")->count() > 0,
+                                      printCmd->get_option("-m")->count() > 0);
+}
+
+void
+generateDiceware(std::string* outPassphrase, Flags_t* flags)
+{
+    PasswordGenerator generator;
+    *outPassphrase = generator.generate(*flags, false, false);
+}
+
+// Adds just the flags for diceware options
+void
+addPartialDicewareFlags(CLI::App* generateCmd, Flags_t* flags)
+{
+    generateCmd
+      ->add_option("-q,--quantity",
+                   flags->dicewareLength,
+                   "Diceware: Quantity of words generated")
+      ->default_val(6);
+}
+
+// Adds just the flags for password options
+void
+addPartialPasswordFlags(CLI::App* generateCmd, Flags_t* flags)
+{
+    generateCmd
+      ->add_option("-m,--min", flags->minLength, "Password: Minimum length")
+      ->default_val(18);
+    generateCmd
+      ->add_option("-x,--max", flags->maxLength, "Password: Maximum length")
+      ->default_val(24);
+    generateCmd->add_flag("-c,--capital",
+                          flags->upperRequired,
+                          "Password: Require uppercase letters");
+    generateCmd->add_flag("-l,--lower",
+                          flags->lowerRequired,
+                          "Password: Require lowercase letters");
+    generateCmd->add_flag(
+      "-n,--num", flags->numRequired, "Password: Require numbers");
+    generateCmd->add_flag("-s,--special",
+                          flags->specialRequired,
+                          "Password: Require special characters");
+    generateCmd->add_flag("-C,--no-capital",
+                          flags->upperNotAllowed,
+                          "Password: Do not allow uppercase letters");
+    generateCmd->add_flag("-L,--no-lower",
+                          flags->lowerNotAllowed,
+                          "Password: Do not allow lowercase letters");
+    generateCmd->add_flag(
+      "-N,--no-num", flags->numNotAllowed, "Password: Do not allow numbers");
+    generateCmd->add_flag("-S,--no-special",
+                          flags->specialNotAllowed,
+                          "Password: Do not allow special characters");
+    generateCmd->add_flag("-y,--dictionary",
+                          flags->noDictionaryWords,
+                          "Password: Do not allow dictionary words");
+    generateCmd->add_flag("-r,--repeat",
+                          flags->noRepeatCharacters,
+                          "Password: Do not allow repeated characters");
+    generateCmd->add_flag("-w,--pw-diceware",
+                          flags->dicewarePassword,
+                          "Password: Use diceware in password generation");
+}
+
+// Adds option flags + -d for use in other commands
+void
+addAllDicewareFlags(CLI::App* generateCmd, Flags_t* flags)
+{
+    generateCmd->add_flag("-d,--diceware",
+                          flags->dicewareOnly,
+                          "Enable diceware passphrase generation");
+
+    addPartialDicewareFlags(generateCmd, flags);
+}
+
+// Adds option flags + -g for use in other commands
+void
+addAllPasswordFlags(CLI::App* generateCmd, Flags_t* flags)
+{
+    generateCmd->add_flag(
+      "-g,--generate", flags->genBool, "Enable password generation");
+
+    addPartialPasswordFlags(generateCmd, flags);
+}
+
+// For use in other commands where diceware and passwords are used
+void
+addPasswordAndDicewareFlags(CLI::App* generateCmd, Flags_t* flags)
+{
+    addAllPasswordFlags(generateCmd, flags);
+    addAllDicewareFlags(generateCmd, flags);
+}
+
 // Error handling for conflicting or impossible requirements, including detailed
 // message
 void
 PasswordGenerator::validate() const
 {
     if (minLength < 0) {
-        throw std::runtime_error("ERROR: Minimum length must be at least 0.");
+        throw ConflictingFlagsException(
+          "ERROR: Minimum length must be at least 0.");
     }
 
     if (maxLength < 1) {
-        throw std::runtime_error("ERROR: Max length must be at least 1.");
+        throw ConflictingFlagsException(
+          "ERROR: Max length must be at least 1.");
     }
 
     if (minLength > maxLength) {
-        throw std::runtime_error(
+        throw ConflictingFlagsException(
           "ERROR: Minimum length is greater than maximum length.");
     }
 
     if (useDiceware && (noDictionaryWords || noConsecutiveRepeats)) {
-        throw std::runtime_error(
+        throw ConflictingFlagsException(
           "ERROR: Invalid use of diceware with specified constraints.");
     }
 
     if (useDiceware && noUppercase && noLowercase) {
-        throw std::runtime_error("ERROR: Must allow either uppercase or "
-                                 "lowercase letters when using diceware.");
+        throw ConflictingFlagsException(
+          "ERROR: Must allow either uppercase or "
+          "lowercase letters when using diceware.");
     }
 
     if ((requireUppercase && noUppercase) ||
         (requireLowercase && noLowercase) || (requireNumbers && noNumbers) ||
         (requireSpecialChars && noSpecialChars)) {
-        throw std::runtime_error(
+        throw ConflictingFlagsException(
           "ERROR: Conflicting requirements for character types.");
     }
 
     if (noUppercase && noLowercase && noNumbers && noSpecialChars) {
-        throw std::runtime_error(
+        throw ConflictingFlagsException(
           "ERROR: At least one character type must be allowed.");
     }
 
     if (noNumbers && noSpecialChars && noDictionaryWords) {
-        throw std::runtime_error("ERROR: Cannot have no numbers, special "
-                                 "characters, and no dictionary words.");
+        throw ConflictingFlagsException(
+          "ERROR: Cannot have no numbers, special "
+          "characters, and no dictionary words.");
     }
 
     if (useDiceware && maxLength < 5) {
-        throw std::runtime_error(
+        throw ConflictingFlagsException(
           "ERROR: Maximum length must be at least 5 when using diceware.");
     }
 
@@ -66,18 +169,21 @@ PasswordGenerator::validate() const
         requirementsMet++;
 
     if (requirementsMet == 4 && maxLength < 4) {
-        throw std::runtime_error("ERROR: Max length must be at least 4 with "
-                                 "all character requirements.");
+        throw ConflictingFlagsException(
+          "ERROR: Max length must be at least 4 with "
+          "all character requirements.");
     }
 
     if (requirementsMet == 3 && maxLength < 3) {
-        throw std::runtime_error("ERROR: Max length must be at least 3 with "
-                                 "three character requirements.");
+        throw ConflictingFlagsException(
+          "ERROR: Max length must be at least 3 with "
+          "three character requirements.");
     }
 
     if (requirementsMet == 2 && maxLength < 2) {
-        throw std::runtime_error("ERROR: Max length must be at least 2 with "
-                                 "two character requirements.");
+        throw ConflictingFlagsException(
+          "ERROR: Max length must be at least 2 with "
+          "two character requirements.");
     }
 }
 
@@ -498,7 +604,8 @@ std::string
 PasswordGenerator::dicewareOnly() const
 {
     if (dicewareWordCount < 1) {
-        throw std::runtime_error("ERROR: Word count must be at least 1.");
+        throw ConflictingFlagsException(
+          "ERROR: Word count must be at least 1.");
     }
 
     std::vector<std::vector<std::string>> words = readWordsFromFile();

@@ -79,7 +79,7 @@ add_library(
     ${PROJECT_SOURCE_DIR}/src/cli/create.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/entry.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/password.cpp
-    ${PROJECT_SOURCE_DIR}/src/cli/example.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli/diceware.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/getPass.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/error.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/encryptor.cpp
