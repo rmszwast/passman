@@ -1,23 +1,24 @@
 #include "clip.hpp"
-#include "lib/yaml-cpp/include/yaml-cpp/yaml.h"
-#include "../utils/error.hpp"
 #include "../utils/encryptor_handler.hpp"
+#include "../utils/error.hpp"
+#include "yaml-cpp/yaml.h"
+#include <fstream>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <unistd.h>
 #include <vector>
-#include <fstream>
 
 #define DEFAULT_CLIPBOARD_TIMEOUT 10
 
 namespace {
-    std::string path;
-    Entry_t entry;
-    Flags_t flags;
-    VaultReader vaultReader;
-    PassGetter passGetter;
+std::string path;
+Entry_t entry;
+Flags_t flags;
+VaultReader vaultReader;
+PassGetter passGetter;
+int manualTimeout;
 }
 
 Clip::Clip(CLI::App* app)
@@ -28,17 +29,26 @@ Clip::setup()
 {
     name = "clip";
     description = "Copy entry information to the clipboard";
-    app = app->add_subcommand(name, description);
-    app->usage("passman clip COMMAND [OPTIONS]");
-    app->add_option("clip", "clip = copy to clipboard");
+    app = app->add_subcommand(name, description)
+            ->usage("passman clip [OPTIONS] PATH ENTRY")
+            ->callback([]() {
+                clipPassword(
+                  path, entry, flags, vaultReader, passGetter, manualTimeout);
+            });
+    app->add_option("-t, --timeout",
+                    manualTimeout,
+                    "Enter a timeout length in secs (default = 10)");
+    app->add_option("path", path, "Path of the vault")->required();
+    app->add_option("entry", entry.name, "Name of the entry")->required();
 }
 
 void
-Clip(std::string path,
-    Entry_t entry,
-    Flags_t flags,
-    VaultReaderInterface& vaultReader, 
-    PassGetterInterface& passGetter)
+clipPassword(std::string path,
+             Entry_t entry,
+             Flags_t flags,
+             VaultReaderInterface& vaultReader,
+             PassGetterInterface& passGetter,
+             int manualTimeout)
 {
 
     // Read vault data
@@ -80,11 +90,16 @@ Clip(std::string path,
         return;
     }
 
-    //unpack password and store in variable
-    YAML::Node onode = inode[entry.name];
-    std::string password = onode["Password"];
+    // unpack password and store in variable
+    std::string password = inode[entry.name]["Password"].as<std::string>();
 
-    int timeout = DEFAULT_CLIPBOARD_TIMEOUT;
+    int timeout;
+    if (manualTimeout < 1) {
+        int timeout = DEFAULT_CLIPBOARD_TIMEOUT;
+    } else {
+        int timeout = manualTimeout;
+    }
+
     // sanitize password here
     std::string chars_to_escape = "\\\"$`<>|;&";
     for (char c : chars_to_escape) {
@@ -97,15 +112,19 @@ Clip(std::string path,
     // copy to clipboard
     std::string cmd = "echo " + password + " | xclip -selection clipboard";
     try {
+        std::cout << "place 1" << std::endl;
         int res = system(cmd.c_str());
+        std::cout << "place 2" << std::endl;
         if (res != 0) {
-            std::cerr << "Failed to copy to clipboard. Please ensure xclip is installed (try: sudo apt-get install xclip)" << std::endl;
+            std::cerr << "Failed to copy to clipboard. Please ensure xclip is "
+                         "installed (try: sudo apt-get install xclip)"
+                      << std::endl;
             return;
-        }
-        else {
+        } else {
             // clear clipboard after set amount of time
             while (timeout >= 0) {
-                std::cout << "\r Clearing clipboard in " << timeout << " seconds ";
+                std::cout << "\r Clearing clipboard in " << timeout
+                          << " seconds ";
                 sleep(1);
                 timeout--;
                 fflush(stdout);
@@ -116,8 +135,9 @@ Clip(std::string path,
             system("xclip /dev/null");
             system("xclip -selection clipboard /dev/null");
         }
-    }
-    catch (const std::runtime_error& e) {
+    } catch (const std::runtime_error& e) {
+        printErr(e.what());
+        return;
     }
     return;
 }

@@ -19,4 +19,20 @@ void
 setupCommands(CLI::App* app);
 }
 
+struct Entry_t
+{
+    std::string name;
+    std::string username;
+    std::string password;
+    std::string URL;
+    std::string notes;
+};
+
+struct Flags_t
+{
+    bool genBool;    // -g, --generate-password
+    bool promptBool; // -p, --prompt-password
+    bool showBool;   // -s --show-password
+};
+
 #endif

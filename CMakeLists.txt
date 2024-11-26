@@ -80,6 +80,7 @@ add_library(
     ${PROJECT_SOURCE_DIR}/src/cli/entry.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/add.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/show.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli/clip.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/passGetter.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/error.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/encryptor.cpp
@@ -87,7 +88,6 @@ add_library(
     ${PROJECT_SOURCE_DIR}/src/utils/vaultReader.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/vaultWriter.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/vaultReaderWriter.cpp
-    ${PROJECT_SOURCE_DIR}/src/utils/clip.cpp
 )
 
 # link libraries to the executable

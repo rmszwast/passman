@@ -8,6 +8,7 @@ Vault::setup()
 {
     name = "vault";
     description = "Manage vaults";
-    app = app->add_subcommand(name, description);
-    app->usage("passman vault COMMAND [OPTIONS]");
+    app = app->add_subcommand(name, description)
+            ->usage("passman vault COMMAND [OPTIONS]")
+            ->require_subcommand();
 };
