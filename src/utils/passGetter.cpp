@@ -1,11 +1,11 @@
-#include "getPass.hpp"
+#include "passGetter.hpp"
 #include "error.hpp"
 #include <iostream>
 #include <termios.h>
 #include <unistd.h>
 
 std::string
-getPass_api::getPass(std::string prompt)
+PassGetter::get(std::string prompt)
 {
     std::string pass = "";
     termios oflags, nflags;
