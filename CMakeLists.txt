@@ -78,6 +78,8 @@ add_library(
     ${PROJECT_SOURCE_DIR}/src/cli/vault.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/create.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/entry.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli/password.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli/diceware.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/passGetter.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/error.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/encryptor.cpp
@@ -85,6 +87,7 @@ add_library(
     ${PROJECT_SOURCE_DIR}/src/utils/vaultReader.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/vaultWriter.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/vaultReaderWriter.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/generate.cpp
 )
 
 # link libraries to the executable
