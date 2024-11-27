@@ -19,4 +19,26 @@ void
 setupCommands(CLI::App* app);
 }
 
+struct Flags_t
+{
+    bool genBool = false;    // -g, --generate-password
+    bool promptBool = false; // -p, --prompt-password
+    bool showBool = false;   // -s, --show-password
+    bool upperRequired = false;
+    bool lowerRequired = false;
+    bool numRequired = false;
+    bool specialRequired = false;
+    bool upperNotAllowed = false;
+    bool lowerNotAllowed = false;
+    bool numNotAllowed = false;
+    bool specialNotAllowed = false;
+    bool noDictionaryWords = false;
+    bool noRepeatCharacters = false;
+    bool dicewarePassword = false;
+    bool dicewareOnly = false;
+    int minLength = 18;
+    int maxLength = 24;
+    int dicewareLength = 5;
+};
+
 #endif
