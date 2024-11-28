@@ -187,6 +187,14 @@ PasswordGenerator::validate() const
     }
 }
 
+// Helper function, used when the password is too short to scramble it, avoiding
+// predictable patterns
+void
+scrambleString(std::mt19937& gen, std::string& input)
+{
+    std::shuffle(input.begin(), input.end(), gen);
+}
+
 // Helper function to efficiently convert word to full uppercase/capital
 std::string
 toUpperCase(const std::string& input)
@@ -300,8 +308,7 @@ PasswordGenerator::getSpacer(std::mt19937& gen) const
                                                 Constants::Spacers.size() - 1);
         return std::string(1, Constants::Spacers[dist(gen)]);
     } else if (!noNumbers) {
-        std::uniform_int_distribution<int> dist(0, 1);
-        return dist(gen) == 0 ? "0" : "1";
+        return "0";
     } else {
         return "";
     }
@@ -456,6 +463,8 @@ PasswordGenerator::create() const
 
         int length = getFinalLength(gen);
 
+        std::cout << length << std::endl;
+
         bool reserveLast = false;
         if (requireNumbers && !noSpecialChars) {
             reserveLast = true;
@@ -478,17 +487,20 @@ PasswordGenerator::create() const
         while (password.length() < length) {
             int charsLeft = length - password.length();
             if (charsLeft >= 3 || (spacer == "" && charsLeft >= 2)) {
-                if (wordCase == "Snake") {
-                    password += getWordFromList(
-                      gen, words[getArrayForLength(charsLeft, gen) - 2]);
-                } else if (wordCase == "Lower") {
-                    password += toLowerCase(getWordFromList(
-                      gen, words[getArrayForLength(charsLeft, gen) - 2]));
-                } else {
-                    password += toUpperCase(getWordFromList(
-                      gen, words[getArrayForLength(charsLeft, gen) - 2]));
+                int wordIndex = getArrayForLength(charsLeft, gen) - 2;
+                if (spacer != "") {
+                    wordIndex--;
                 }
-            } else if (charsLeft >= 2 || (spacer == "" && charsLeft >= 1)) {
+                if (wordCase == "Snake") {
+                    password += getWordFromList(gen, words[wordIndex]);
+                } else if (wordCase == "Lower") {
+                    password +=
+                      toLowerCase(getWordFromList(gen, words[wordIndex]));
+                } else {
+                    password +=
+                      toUpperCase(getWordFromList(gen, words[wordIndex]));
+                }
+            } else if (charsLeft >= 2 || (spacer == "" && charsLeft >= 3)) {
                 if (wordCase == "Snake") {
                     password += getRandomString(
                       gen, Constants::Lowercase + Constants::Uppercase);
@@ -498,7 +510,11 @@ PasswordGenerator::create() const
                     password += getRandomString(gen, Constants::Uppercase);
                 }
             }
-            password += spacer;
+            if (spacer != "0") {
+                password += spacer;
+            } else {
+                password += getRandomString(gen, Constants::Numbers);
+            }
         }
 
         if (reserveLast) {
@@ -558,19 +574,17 @@ PasswordGenerator::create() const
                 // Above, null separator is default char for no consecutive
                 // repeat work, since it's never present here
 
+                int substrLength = getArrayForLength(charsLeft, gen) - 1;
+                if (spacer != "") {
+                    substrLength--;
+                }
+
                 if (noDictionaryWords) {
                     password += getRandomStringOfLengthNoDict(
-                      gen,
-                      charChoice,
-                      charChoice2,
-                      getArrayForLength(charsLeft, gen) - 1,
-                      lastChar);
+                      gen, charChoice, charChoice2, substrLength, lastChar);
                 } else {
                     password += getRandomStringOfLength(
-                      gen,
-                      charChoice,
-                      getArrayForLength(charsLeft, gen) - 1,
-                      lastChar);
+                      gen, charChoice, substrLength, lastChar);
                 }
 
             } else if (charsLeft >= 2 || (spacer == "" && charsLeft >= 1)) {
@@ -588,12 +602,20 @@ PasswordGenerator::create() const
                 password +=
                   getRandomStringOfLength(gen, charChoice, 1, lastChar);
             } else {
-                password += spacer;
+                if (spacer != "0") {
+                    password += spacer;
+                } else {
+                    password += getRandomString(gen, Constants::Numbers);
+                }
             }
         }
 
         if (reserveLast) {
             password += getRandomString(gen, Constants::Numbers);
+        }
+
+        if (length < 5) {
+            scrambleString(gen, password);
         }
 
         return password;
