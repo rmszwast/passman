@@ -21,7 +21,7 @@ Password::setup()
 
     generateCmd->callback([=]() {
         try {
-            generatePassword(generateCmd, &password, &flags);
+            generatePassword(&password, &flags);
             std::cout << "Generated password: " << password << std::endl;
         } catch (const ConflictingFlagsException& e) {
             std::cerr << "Flag/Option Issue: " << e.what() << std::endl;

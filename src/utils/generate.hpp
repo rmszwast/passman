@@ -27,8 +27,7 @@ class PasswordGenerator
 {
   private:
     // All data members as settings for generating with their default
-    int minLength = 18;
-    int maxLength = 24;
+    int length = 20;
     bool requireUppercase = false;
     bool noUppercase = false;
     bool requireLowercase = false;
@@ -71,7 +70,7 @@ class PasswordGenerator
 
   public:
     // Main generate function to be used by other files
-    std::string generate(const Flags_t& flags, bool maxUsed, bool minUsed);
+    std::string generate(const Flags_t& flags);
 };
 
 // Below, standalone functions to be used by actual commands
@@ -84,7 +83,7 @@ addAllPasswordFlags(CLI::App* generateCmd, Flags_t* flags);
 void
 addAllDicewareFlags(CLI::App* generateCmd, Flags_t* flags);
 void
-generatePassword(CLI::App* printCmd, std::string* outPassword, Flags_t* flags);
+generatePassword(std::string* outPassword, Flags_t* flags);
 void
 generateDiceware(std::string* outPassword, Flags_t* flags);
 

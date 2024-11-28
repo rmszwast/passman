@@ -1,24 +1,23 @@
 #include "generate.hpp"
 #include "../cli/command.hpp"
+#include "words.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
 void
-generatePassword(CLI::App* printCmd, std::string* outPassword, Flags_t* flags)
+generatePassword(std::string* outPassword, Flags_t* flags)
 {
     PasswordGenerator generator;
-    *outPassword = generator.generate(*flags,
-                                      printCmd->get_option("-x")->count() > 0,
-                                      printCmd->get_option("-m")->count() > 0);
+    *outPassword = generator.generate(*flags);
 }
 
 void
 generateDiceware(std::string* outPassphrase, Flags_t* flags)
 {
     PasswordGenerator generator;
-    *outPassphrase = generator.generate(*flags, false, false);
+    *outPassphrase = generator.generate(*flags);
 }
 
 // Adds just the flags for diceware options
@@ -37,12 +36,11 @@ void
 addPartialPasswordFlags(CLI::App* generateCmd, Flags_t* flags)
 {
     generateCmd
-      ->add_option("-m,--min", flags->minLength, "Password: Minimum length")
-      ->default_val(18);
-    generateCmd
-      ->add_option("-x,--max", flags->maxLength, "Password: Maximum length")
-      ->default_val(24);
-    generateCmd->add_flag("-c,--capital",
+      ->add_option("-c,--characters",
+                   flags->length,
+                   "Password: Character length as an integer")
+      ->default_val(20);
+    generateCmd->add_flag("-u,--uppercase",
                           flags->upperRequired,
                           "Password: Require uppercase letters");
     generateCmd->add_flag("-l,--lower",
@@ -53,7 +51,7 @@ addPartialPasswordFlags(CLI::App* generateCmd, Flags_t* flags)
     generateCmd->add_flag("-s,--special",
                           flags->specialRequired,
                           "Password: Require special characters");
-    generateCmd->add_flag("-C,--no-capital",
+    generateCmd->add_flag("-U,--no-uppercase",
                           flags->upperNotAllowed,
                           "Password: Do not allow uppercase letters");
     generateCmd->add_flag("-L,--no-lower",
@@ -109,19 +107,8 @@ addPasswordAndDicewareFlags(CLI::App* generateCmd, Flags_t* flags)
 void
 PasswordGenerator::validate() const
 {
-    if (minLength < 0) {
-        throw ConflictingFlagsException(
-          "ERROR: Minimum length must be at least 0.");
-    }
-
-    if (maxLength < 1) {
-        throw ConflictingFlagsException(
-          "ERROR: Max length must be at least 1.");
-    }
-
-    if (minLength > maxLength) {
-        throw ConflictingFlagsException(
-          "ERROR: Minimum length is greater than maximum length.");
+    if (length < 1) {
+        throw ConflictingFlagsException("ERROR: Length must be at least 1.");
     }
 
     if (useDiceware && (noDictionaryWords || noConsecutiveRepeats)) {
@@ -153,7 +140,7 @@ PasswordGenerator::validate() const
           "characters, and no dictionary words.");
     }
 
-    if (useDiceware && maxLength < 5) {
+    if (useDiceware && length < 5) {
         throw ConflictingFlagsException(
           "ERROR: Maximum length must be at least 5 when using diceware.");
     }
@@ -168,19 +155,19 @@ PasswordGenerator::validate() const
     if (requireSpecialChars)
         requirementsMet++;
 
-    if (requirementsMet == 4 && maxLength < 4) {
+    if (requirementsMet == 4 && length < 4) {
         throw ConflictingFlagsException(
           "ERROR: Max length must be at least 4 with "
           "all character requirements.");
     }
 
-    if (requirementsMet == 3 && maxLength < 3) {
+    if (requirementsMet == 3 && length < 3) {
         throw ConflictingFlagsException(
           "ERROR: Max length must be at least 3 with "
           "three character requirements.");
     }
 
-    if (requirementsMet == 2 && maxLength < 2) {
+    if (requirementsMet == 2 && length < 2) {
         throw ConflictingFlagsException(
           "ERROR: Max length must be at least 2 with "
           "two character requirements.");
@@ -223,30 +210,7 @@ toLowerCase(const std::string& input)
 std::vector<std::vector<std::string>>
 PasswordGenerator::readWordsFromFile() const
 {
-    std::vector<std::vector<std::string>> wordLists(
-      5); // Initialize with 5 lists
-    std::ifstream file("src/utils/words.txt");
-
-    if (!file.is_open()) {
-        std::cerr << "Error opening file src/words.txt." << std::endl;
-        return wordLists; // Return empty vectors if file can't be opened
-    }
-
-    std::string line;
-    int listIndex = 0;
-
-    while (std::getline(file, line)) {
-        if (line == "____") {
-            listIndex++; // Move to the next list on delimiter
-            if (listIndex >= 5)
-                break; // Stop if more than 5 lists are found
-        } else {
-            wordLists[listIndex].push_back(line); // Add word to current list
-        }
-    }
-
-    file.close();
-    return wordLists;
+    return allWords;
 }
 
 // Randomly generates a word length from 2 -> the highest possible length, based
@@ -285,18 +249,6 @@ getArrayForLength(int count, std::mt19937& gen)
     } else {
         return 6;
     }
-}
-
-// Randomly chooses password length based on max and min characters
-int
-PasswordGenerator::getFinalLength(std::mt19937& gen) const
-{
-    if (minLength > maxLength) {
-        return minLength;
-    }
-
-    std::uniform_int_distribution<> dis(minLength, maxLength);
-    return dis(gen);
 }
 
 // Randomly chooses a spacer between chunks/words to clearly separate them
@@ -461,16 +413,12 @@ PasswordGenerator::create() const
 
     if (useDiceware) {
 
-        int length = getFinalLength(gen);
-
-        std::cout << length << std::endl;
+        int passLength = length;
 
         bool reserveLast = false;
         if (requireNumbers && !noSpecialChars) {
             reserveLast = true;
-            if (length == maxLength) {
-                length--;
-            }
+            passLength--;
         }
 
         std::vector<std::vector<std::string>> words = readWordsFromFile();
@@ -484,8 +432,8 @@ PasswordGenerator::create() const
         std::string spacer = getSpacer(gen);
         std::string password = "";
 
-        while (password.length() < length) {
-            int charsLeft = length - password.length();
+        while (password.length() < passLength) {
+            int charsLeft = passLength - password.length();
             if (charsLeft >= 3 || (spacer == "" && charsLeft >= 2)) {
                 int wordIndex = getArrayForLength(charsLeft, gen) - 2;
                 if (spacer != "") {
@@ -523,14 +471,12 @@ PasswordGenerator::create() const
 
         return password;
     } else {
-        int length = getFinalLength(gen);
+        int passLength = length;
 
         bool reserveLast = false;
         if (requireNumbers && !noSpecialChars) {
             reserveLast = true;
-            if (length == maxLength) {
-                length--;
-            }
+            passLength--;
         }
 
         std::string charChoice;
@@ -556,19 +502,20 @@ PasswordGenerator::create() const
                 charChoice2 = Constants::Specials;
             }
             if (requireUppercase && requireLowercase && requireNumbers &&
-                requireSpecialChars && length == 4) {
-                return specialPatternGen(gen, length, true);
+                requireSpecialChars && passLength == 4) {
+                return specialPatternGen(gen, passLength, true);
             } else if (requireUppercase && requireLowercase &&
-                       (requireNumbers || requireSpecialChars) && length == 3) {
-                return specialPatternGen(gen, length, requireNumbers);
+                       (requireNumbers || requireSpecialChars) &&
+                       passLength == 3) {
+                return specialPatternGen(gen, passLength, requireNumbers);
             }
         }
 
         std::string spacer = getSpacer(gen);
         std::string password = "";
 
-        while (password.length() < length) {
-            int charsLeft = length - password.length();
+        while (password.length() < passLength) {
+            int charsLeft = passLength - password.length();
             if (charsLeft >= 3 || (spacer == "" && charsLeft >= 2)) {
                 char lastChar = password.empty() ? '\x1F' : password.back();
                 // Above, null separator is default char for no consecutive
@@ -614,7 +561,7 @@ PasswordGenerator::create() const
             password += getRandomString(gen, Constants::Numbers);
         }
 
-        if (length < 5) {
+        if (passLength < 5) {
             scrambleString(gen, password);
         }
 
@@ -645,22 +592,10 @@ PasswordGenerator::dicewareOnly() const
 }
 
 std::string
-PasswordGenerator::generate(const Flags_t& flags, bool maxUsed, bool minUsed)
+PasswordGenerator::generate(const Flags_t& flags)
 {
-    // Directly modify the member variables without using setter functions
-    minLength = flags.minLength;
-    maxLength = flags.maxLength;
 
-    if (minUsed && !maxUsed) {
-        maxLength = minLength + 5;
-    } else if (maxUsed && !minUsed) {
-        if (maxLength < 5) {
-            minLength = maxLength;
-        } else {
-            minLength = std::max(maxLength - 2, 1);
-        }
-    }
-
+    length = flags.length;
     requireUppercase = flags.upperRequired;
     noUppercase = flags.upperNotAllowed;
     requireLowercase = flags.lowerRequired;

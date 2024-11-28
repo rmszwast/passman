@@ -88,6 +88,7 @@ add_library(
     ${PROJECT_SOURCE_DIR}/src/utils/vaultWriter.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/vaultReaderWriter.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/generate.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/words.cpp
 )
 
 # link libraries to the executable
