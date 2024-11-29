@@ -79,6 +79,7 @@ add_library(
     ${PROJECT_SOURCE_DIR}/src/cli/create.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/entry.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/add.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli/edit.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/list.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/show.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/password.cpp
