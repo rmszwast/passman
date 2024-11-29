@@ -1,8 +1,11 @@
 #include "command.hpp"
+#include "add.hpp"
 #include "create.hpp"
 #include "diceware.hpp"
 #include "entry.hpp"
+#include "list.hpp"
 #include "password.hpp"
+#include "show.hpp"
 #include "vault.hpp"
 
 Command::Command(CLI::App* app)
@@ -21,6 +24,12 @@ Commands::setupCommands(CLI::App* app)
     // Entry commands
     Entry entry = Entry(app);
     entry.setup();
+    Add add = Add(entry.app);
+    add.setup();
+    List list(entry.app);
+    list.setup();
+    Show show = Show(entry.app);
+    show.setup();
 
     // Password command
     Password password = Password(app);
