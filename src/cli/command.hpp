@@ -36,8 +36,7 @@ struct Flags_t
     bool noRepeatCharacters = false;
     bool dicewarePassword = false;
     bool dicewareOnly = false;
-    int minLength = 18;
-    int maxLength = 24;
+    int length = 18;
     int dicewareLength = 5;
 };
 
