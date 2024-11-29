@@ -2,6 +2,7 @@
 #include "add.hpp"
 #include "create.hpp"
 #include "diceware.hpp"
+#include "edit.hpp"
 #include "entry.hpp"
 #include "list.hpp"
 #include "password.hpp"
@@ -26,6 +27,8 @@ Commands::setupCommands(CLI::App* app)
     entry.setup();
     Add add = Add(entry.app);
     add.setup();
+    Edit edit = Edit(entry.app);
+    edit.setup();
     List list(entry.app);
     list.setup();
     Show show = Show(entry.app);
