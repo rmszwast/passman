@@ -112,6 +112,7 @@ clipPassword(std::string path,
             pos += 2;
         }
     }
+
     // copy to clipboard
     std::string cmd = "echo " + password + " | xclip -selection clipboard";
     try {

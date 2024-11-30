@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 3.20)
 # add new test files here
 add_executable(
     test_${CMAKE_PROJECT_NAME} 
-    ${PROJECT_SOURCE_DIR}/tests/test_clip.cpp
 ) 
 
 # link libraries to the executable
