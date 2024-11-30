@@ -7,6 +7,16 @@
 #include <vector>
 
 void
+generatePasswordOrDiceware(std::string* outPassword, Flags_t* flags)
+{
+    if (flags->genBool) {
+        generatePassword(outPassword, flags);
+    } else if (flags->dicewareOnly) {
+        generateDiceware(outPassword, flags);
+    }
+}
+
+void
 generatePassword(std::string* outPassword, Flags_t* flags)
 {
     PasswordGenerator generator;
@@ -260,7 +270,10 @@ PasswordGenerator::getSpacer(std::mt19937& gen) const
                                                 Constants::Spacers.size() - 1);
         return std::string(1, Constants::Spacers[dist(gen)]);
     } else if (!noNumbers) {
-        return "0";
+        std::uniform_int_distribution<int> dist(0,
+                                                Constants::Numbers.size() - 1);
+        return std::string(1, Constants::Numbers[dist(gen)]);
+        ;
     } else {
         return "";
     }
@@ -429,14 +442,13 @@ PasswordGenerator::create() const
             wordCase = "Upper";
         }
 
-        std::string spacer = getSpacer(gen);
         std::string password = "";
 
         while (password.length() < passLength) {
             int charsLeft = passLength - password.length();
-            if (charsLeft >= 3 || (spacer == "" && charsLeft >= 2)) {
+            if (charsLeft >= 3 || (getSpacer(gen) == "" && charsLeft >= 2)) {
                 int wordIndex = getArrayForLength(charsLeft, gen) - 2;
-                if (spacer != "") {
+                if (getSpacer(gen) != "") {
                     wordIndex--;
                 }
                 if (wordCase == "Snake") {
@@ -448,7 +460,8 @@ PasswordGenerator::create() const
                     password +=
                       toUpperCase(getWordFromList(gen, words[wordIndex]));
                 }
-            } else if (charsLeft >= 2 || (spacer == "" && charsLeft >= 3)) {
+            } else if (charsLeft >= 2 ||
+                       (getSpacer(gen) == "" && charsLeft >= 3)) {
                 if (wordCase == "Snake") {
                     password += getRandomString(
                       gen, Constants::Lowercase + Constants::Uppercase);
@@ -458,11 +471,7 @@ PasswordGenerator::create() const
                     password += getRandomString(gen, Constants::Uppercase);
                 }
             }
-            if (spacer != "0") {
-                password += spacer;
-            } else {
-                password += getRandomString(gen, Constants::Numbers);
-            }
+            password += getSpacer(gen);
         }
 
         if (reserveLast) {
@@ -511,18 +520,17 @@ PasswordGenerator::create() const
             }
         }
 
-        std::string spacer = getSpacer(gen);
         std::string password = "";
 
         while (password.length() < passLength) {
             int charsLeft = passLength - password.length();
-            if (charsLeft >= 3 || (spacer == "" && charsLeft >= 2)) {
+            if (charsLeft >= 3 || (getSpacer(gen) == "" && charsLeft >= 2)) {
                 char lastChar = password.empty() ? '\x1F' : password.back();
                 // Above, null separator is default char for no consecutive
                 // repeat work, since it's never present here
 
                 int substrLength = getArrayForLength(charsLeft, gen) - 1;
-                if (spacer != "") {
+                if (getSpacer(gen) != "") {
                     substrLength--;
                 }
 
@@ -534,7 +542,8 @@ PasswordGenerator::create() const
                       gen, charChoice, substrLength, lastChar);
                 }
 
-            } else if (charsLeft >= 2 || (spacer == "" && charsLeft >= 1)) {
+            } else if (charsLeft >= 2 ||
+                       (getSpacer(gen) == "" && charsLeft >= 1)) {
                 char lastChar = password.empty() ? '\x1F' : password.back();
                 if (noDictionaryWords) {
                     password += getRandomStringOfLengthNoDict(
@@ -544,16 +553,12 @@ PasswordGenerator::create() const
                       getRandomStringOfLength(gen, charChoice, 1, lastChar);
                 }
             }
-            if (noConsecutiveRepeats && spacer != "") {
+            if (noConsecutiveRepeats && getSpacer(gen) != "") {
                 char lastChar = password.empty() ? '\x1F' : password.back();
                 password +=
                   getRandomStringOfLength(gen, charChoice, 1, lastChar);
             } else {
-                if (spacer != "0") {
-                    password += spacer;
-                } else {
-                    password += getRandomString(gen, Constants::Numbers);
-                }
+                password += getSpacer(gen);
             }
         }
 
