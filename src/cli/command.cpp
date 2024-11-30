@@ -6,6 +6,7 @@
 #include "entry.hpp"
 #include "list.hpp"
 #include "password.hpp"
+#include "remove.hpp"
 #include "show.hpp"
 #include "vault.hpp"
 
@@ -29,6 +30,8 @@ Commands::setupCommands(CLI::App* app)
     add.setup();
     Edit edit = Edit(entry.app);
     edit.setup();
+    Remove remove = Remove(entry.app);
+    remove.setup();
     List list(entry.app);
     list.setup();
     Show show = Show(entry.app);
