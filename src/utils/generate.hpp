@@ -89,5 +89,7 @@ generateDiceware(std::string* outPassword, Flags_t* flags);
 
 void
 addPasswordAndDicewareFlags(CLI::App* generateCmd, Flags_t* flags);
+void
+generatePasswordOrDiceware(std::string* outPassword, Flags_t* flags);
 
 #endif // GENERATOR_H
