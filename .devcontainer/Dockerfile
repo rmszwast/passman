@@ -12,7 +12,8 @@ RUN apt-get update && apt-get -y install \
     gdb \
     git-all \
     python3 \
-    vim
+    vim \
+    xclip
 
 # enable colored prompt
 RUN /bin/bash -c  "sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' ${HOME}/.bashrc"

@@ -83,6 +83,7 @@ add_library(
     ${PROJECT_SOURCE_DIR}/src/cli/remove.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/list.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/show.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli/clip.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/password.cpp
     ${PROJECT_SOURCE_DIR}/src/cli/diceware.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/passGetter.cpp
