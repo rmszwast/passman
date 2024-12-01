@@ -3,6 +3,12 @@
         "dockerfile": "Dockerfile"
     },
     "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/botan && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/Catch2 && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/CLI11 && git config --global --add safe.directory ${containerWorkspaceFolder}/lib/yaml-cpp",
+    "runArgs": [
+        "-e",
+        "DISPLAY=${env:DISPLAY}",
+        "-v",
+        "/tmp/.X11-unix:/tmp/.X11-unix"
+    ],
     "customizations": {
         "vscode": {
             "settings": {

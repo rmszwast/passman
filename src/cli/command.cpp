@@ -1,5 +1,6 @@
 #include "command.hpp"
 #include "add.hpp"
+#include "clip.hpp"
 #include "create.hpp"
 #include "diceware.hpp"
 #include "edit.hpp"
@@ -36,6 +37,8 @@ Commands::setupCommands(CLI::App* app)
     list.setup();
     Show show = Show(entry.app);
     show.setup();
+    Clip clip = Clip(entry.app);
+    clip.setup();
 
     // Password command
     Password password = Password(app);
