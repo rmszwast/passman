@@ -83,7 +83,8 @@ TEST_CASE("Given a nonexisting vault, test branching logic", "[create tests]")
                 createVault(path, vaultWriter, passGetter);
             }
             REQUIRE(!fs::exists(fs::path{ path }));
-            REQUIRE(local.str() == stringErr("failed to open " + path + "\n"));
+            REQUIRE(local.str() ==
+                    stringErr("failed to open file: " + path + "\n"));
         }
     }
 
